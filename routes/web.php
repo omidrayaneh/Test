@@ -20,3 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::resource('/products', 'Admin\ProductController');
+Route::resource('/articles', 'Admin\ArticleController');
+Route::resource('/tags', 'Admin\TagController');
+Route::post('photos/upload', 'Admin\PhotoController@upload')->name('photos.upload');

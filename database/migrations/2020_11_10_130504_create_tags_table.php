@@ -19,6 +19,10 @@ class CreateTagsTable extends Migration
             $table->string('slug');//tag slug
             $table->text('description');//article long description
             $table->boolean('status');//article status =>show or hide for user
+
+            $table->unsignedBigInteger('photo_id');//one to many relegation ship tag and photo
+            $table->foreign('photo_id')->references('id')->on('photos')->onDelete('CASCADE');
+
             $table->timestamps();
         });
     }

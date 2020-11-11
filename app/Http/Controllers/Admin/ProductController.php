@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -20,23 +21,37 @@ class ProductController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * redirect to product create page
+     * @return
      */
     public function create()
     {
-        //
+        return view('products.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
+     * store new product to database with form validation
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:3',
+        ], [
+            'title.required'=>'product title is required',
+            'title.min'=>'product title is less more than 3 character',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->route('products.create')
+                ->withErrors($validator)->withInput();
+        }
+
+        $product=new Product();
+        $product->title=$request->input('title');
+        $product->save();
+        return  redirect('/');
     }
 
     /**

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Article;
 use App\Http\Controllers\Controller;
+use App\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
 {
@@ -18,25 +20,39 @@ class ArticleController extends Controller
         //
     }
 
-    /**
+     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     *  redirect to article create page
+     * @return
      */
     public function create()
     {
-        //
+        return view('articles.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
+     * store new article to database with form validation
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Validation\Validator|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request)
     {
-        //
+         $validator = Validator::make($request->all(), [
+            'title' => 'required|min:3',
+        ], [
+            'title.required'=>'article title is required',
+            'title.min'=>'article title is less more than 3 character',
+        ]);
+        if ($validator->fails()) {
+            return redirect()->route('articles.create')
+                ->withErrors($validator)->withInput();
+        }
+        $article=new Article();
+        $article->title=$request->input('title');
+        $article->save();
+      return  redirect('/');
+
     }
 
     /**
