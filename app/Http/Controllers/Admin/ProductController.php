@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Product;
+use App\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +27,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+         $tags=Tag::where('status',1)->get();
+        return view('products.create',compact(['tags']));
     }
 
     /**
@@ -38,10 +40,12 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|min:3',
+            'title' => 'required|min:3|unique:products',
         ], [
             'title.required'=>'product title is required',
             'title.min'=>'product title is less more than 3 character',
+            'title.unique'=>'product all ready be taken'
+
         ]);
         if ($validator->fails()) {
             return redirect()->route('products.create')
@@ -51,6 +55,16 @@ class ProductController extends Controller
         $product=new Product();
         $product->title=$request->input('title');
         $product->save();
+
+        $tags=$request->input('tag_id');
+        foreach ($tags as $tag){
+            $array=[];
+            $array = explode(',', $tag);
+            $product->tags()->attach(($array));
+        }
+
+
+
         return  redirect('/');
     }
 

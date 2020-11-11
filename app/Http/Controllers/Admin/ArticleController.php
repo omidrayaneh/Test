@@ -27,7 +27,8 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return view('articles.create');
+        $tags=Tag::where('status',1)->get();
+        return view('articles.create',compact(['tags']));
     }
 
     /**
@@ -38,20 +39,32 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-         $validator = Validator::make($request->all(), [
-            'title' => 'required|min:3',
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:3|unique:articles',
         ], [
             'title.required'=>'article title is required',
             'title.min'=>'article title is less more than 3 character',
+            'title.unique'=>'article all ready be taken',
         ]);
         if ($validator->fails()) {
-            return redirect()->route('articles.create')
+            return redirect()->route('products.create')
                 ->withErrors($validator)->withInput();
         }
+
         $article=new Article();
         $article->title=$request->input('title');
         $article->save();
-      return  redirect('/');
+
+        $tags=$request->input('tag_id');
+        foreach ($tags as $tag){
+            $array=[];
+            $array = explode(',', $tag);
+            $article->tags()->attach(($array));
+        }
+
+
+
+        return  redirect('/');
 
     }
 
