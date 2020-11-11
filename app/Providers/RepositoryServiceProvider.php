@@ -13,7 +13,14 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            'App\Repositories\TagRepositoryInterface',
+            'App\Repositories\Eloquent\TagRepository'
+        );
+        $this->app->bind(
+            'App\Repositories\ProductRepositoryInterface',
+            'App\Repositories\Eloquent\ProductRepository'
+        );
     }
 
     /**
